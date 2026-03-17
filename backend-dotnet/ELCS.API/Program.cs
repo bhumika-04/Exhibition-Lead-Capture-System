@@ -69,23 +69,17 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
     options.Level = CompressionLevel.Fastest;
 });
 
-// CORS
+// CORS — origins loaded from appsettings.json "AllowedOrigins" array
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-            "http://localhost:3000",
-            "http://localhost:3001",
-            "http://192.168.137.1:3000",
-            "http://103.150.136.76:3003",
-            "https://exhibitionvistingcard.vercel.app",
-            "https://your-frontend-domain.vercel.app",
-            "https://your-frontend-domain-preview.vercel.app"
-        )
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
